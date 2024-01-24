@@ -15,6 +15,9 @@ services:
       - ./dotenv_files/.env
     depends_on:
       - psql
+    # Adicionando a configuração para desativar "no new privileges"
+    security_opt:
+      - "no-new-privileges:false"
   psql:
     container_name: psql
     image: postgres:13-alpine

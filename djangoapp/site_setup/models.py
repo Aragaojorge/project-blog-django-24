@@ -15,7 +15,7 @@ class MenuLink(models.Model):
     
     # Relationship between Meta and SiteSetup
     site_setup = models.ForeignKey(
-        'SiteSetup', on_delete=models.CASCADE, blank=True, null=True, default=None,
+        'SiteSetup', on_delete=models.CASCADE, blank=True, null=True, default=None, related_name='menu',
     )
     
     def __str__(self):
