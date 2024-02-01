@@ -16,7 +16,7 @@ class PostListView(ListView):
     template_name = 'blog/pages/index.html'
     context_object_name = 'posts'
     paginate_by = PER_PAGE
-    queryset = Post.objects.get_published()#type: ignore
+    queryset = Post.objects.get_published() #type: ignore
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -95,6 +95,26 @@ class CreatedByListView(PostListView):
         return super().get(request, *args, **kwargs)
 
 
+class CategoryListView(PostListView):
+    allow_empty = False
+
+    def get_queryset(self) -> QuerySet[Any]:
+        return super().get_queryset().filter(
+            category__slug=self.kwargs.get('slug')
+        )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        page_title = (
+            f'{self.object_list[0].category.name}'  # type: ignore
+            ' - Categoria - '
+        )
+        ctx.update({
+            'page_title': page_title,
+        })
+        return ctx
+
+
 def category(request, slug):
     posts = Post.objects.get_published().filter(category__slug=slug) #type: ignore
 
@@ -119,7 +139,7 @@ def category(request, slug):
 
 def tag(request, slug):
     posts = Post.objects.get_published().filter(tags__slug=slug) #type: ignore
- 
+
     paginator = Paginator(posts, PER_PAGE)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
